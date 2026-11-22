@@ -1,12 +1,37 @@
 /**
-ASCII banner rendering helper using figlet (Catwalk font).
+The game's ASCII-art banners, rendered once with figlet's Catwalk font and
+kept as plain strings, so the game needs no figlet or font files at runtime
+(and works in a browser).
 */
 
-import figlet from 'figlet';
+const THE_HOUSE = `_/// _//////_//     _//_////////      _//     _//    _////     _//     _//  _// //  _////////
+     _//    _//     _//_//            _//     _//  _//    _//  _//     _//_//    _//_//
+     _//    _//     _//_//            _//     _//_//        _//_//     _// _//      _//
+     _//    _////// _//_//////        _////// _//_//        _//_//     _//   _//    _//////
+     _//    _//     _//_//            _//     _//_//        _//_//     _//      _// _//
+     _//    _//     _//_//            _//     _//  _//     _// _//     _//_//    _//_//
+     _//    _//     _//_////////      _//     _//    _////       _/////     _// //  _////////`;
 
-/**
- * Render ASCII art banner text using the Catwalk figlet font.
- */
-export function renderBanner(text: string): string {
-  return figlet.textSync(text, { font: 'Catwalk' });
-}
+const VICTORY = `_//         _//_//    _//   _/// _//////    _////     _///////    _//      _//
+ _//       _// _// _//   _//     _//      _//    _//  _//    _//   _//    _//
+  _//     _//  _//_//            _//    _//        _//_//    _//    _// _//
+   _//   _//   _//_//            _//    _//        _//_/ _//          _//
+    _// _//    _//_//            _//    _//        _//_//  _//        _//
+     _////     _// _//   _//     _//      _//     _// _//    _//      _//
+      _//      _//   _////       _//        _////     _//      _//    _//`;
+
+const BYE = `_// _//   _//      _//_////////
+_/    _//  _//    _// _//
+_/     _//  _// _//   _//
+_/// _/       _//     _//////
+_/     _//    _//     _//
+_/      _/    _//     _//
+_//// _//     _//     _////////`;
+
+export const BANNERS = {
+  thehouse: THE_HOUSE,
+  victory: VICTORY,
+  bye: BYE,
+} as const;
+
+export type BannerName = keyof typeof BANNERS;

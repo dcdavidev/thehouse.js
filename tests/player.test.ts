@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Player } from '../src/characters/player.js';
 import * as printPauseModule from '../src/helpers/print-pause.js';
+import { setIO } from '../src/io.js';
 
 vi.mock('../src/helpers/print-pause.js', () => ({
   printPause: vi.fn().mockResolvedValue(undefined),
@@ -61,16 +62,20 @@ describe('Player', () => {
   });
 
   it('handles overkill damage without throwing and marks player dead', async () => {
-    const writeSpy = vi
-      .spyOn(process.stdout, 'write')
-      .mockImplementation(() => true);
+    const bell = vi.fn();
+    setIO({
+      print: vi.fn(),
+      choose: vi.fn(),
+      ask: vi.fn(),
+      bell,
+    });
     const player = new Player();
     player.health = 1;
     await player.loseHealth(3);
     expect(player.health).toBe(-2);
     expect(player.isAlive).toBe(false);
-    expect(writeSpy).toHaveBeenCalledWith('\u{7}');
-    writeSpy.mockRestore();
+    expect(bell).toHaveBeenCalledOnce();
+    setIO(null);
   });
 
   it('restores health to maxHealth', async () => {

@@ -25,6 +25,38 @@ npm install -g @dcdavidev/thehouse
 thehouse
 ```
 
+## Use it in your own front end
+
+The game itself has no Node.js or DOM dependencies: it talks to a `GameIO`
+that prints messages and asks questions. The terminal one ships as
+`@dcdavidev/thehouse/terminal`; write your own to run the game on a web page
+or anywhere else.
+
+```ts
+import { type GameIO, main, QuitGame } from '@dcdavidev/thehouse';
+
+const io: GameIO = {
+  // show each message, waiting `seconds` after each one
+  async print(messages, { seconds, banner, status }) {},
+  // resolve with one of `choices`, exactly as given
+  async choose(prompt, choices, { status }) {
+    return choices[0];
+  },
+  // free text (the safe's combination)
+  async ask(prompt, { status }) {
+    return 'back';
+  },
+  // optional: the player got hurt
+  bell() {},
+};
+
+await main(io); // resolves when the player quits or stops playing
+```
+
+A message is a string or a list of `{ text, tone }` spans; `status` holds
+health, items and the current room for a status bar. Reject any call with
+`QuitGame` to end the game from the outside.
+
 ## Development
 
 Install dependencies:

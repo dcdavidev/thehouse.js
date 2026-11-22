@@ -2,10 +2,8 @@
 TheHouse game engine wrapping all rooms and running the game loop.
 */
 
-import chalk from 'chalk';
-
 import type { Player } from './characters/player.js';
-import { renderBanner } from './helpers/banner.js';
+import { BANNERS } from './helpers/banner.js';
 import type { RoomName } from './helpers/constants.js';
 import { printPause } from './helpers/print-pause.js';
 import { randomDeath } from './helpers/random-death.js';
@@ -62,8 +60,7 @@ export class TheHouse {
    * Display the title banner and opening narrative.
    */
   async introduction(): Promise<void> {
-    const banner = chalk.bold.dim.green(renderBanner('THE HOUSE'));
-    await printPause(banner, 3);
+    await printPause([{ text: BANNERS.thehouse, tone: 'title' }], 3);
 
     await printPause(
       [
@@ -90,14 +87,13 @@ export class TheHouse {
       this.currentRoom = nextRoom;
 
       if (!this.player.isAlive) {
+        // randomDeath already ends with the GAME OVER line
         await randomDeath();
-        await printPause(chalk.bold.red('\n=== GAME OVER ===\n'), 3);
         break;
       }
 
       if (this.player.escaped) {
-        const victory = chalk.bold.yellow(renderBanner('VICTORY'));
-        await printPause(victory);
+        await printPause([{ text: BANNERS.victory, tone: 'success' }]);
         break;
       }
     }

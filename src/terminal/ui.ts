@@ -1,12 +1,12 @@
 /**
-Terminal UI components (persistent appbar, bordered panels, layout).
+Terminal UI components (status bar, bordered panels, layout).
 */
 
 import chalk from 'chalk';
 import stringWidth from 'string-width';
 import wrapAnsi from 'wrap-ansi';
 
-import { GameState } from './state.js';
+import type { GameStatus, Message, Tone } from '../io.js';
 
 export interface PanelOptions {
   borderColor?: (text: string) => string;
@@ -14,6 +14,25 @@ export interface PanelOptions {
   paddingY?: number;
   title?: string;
   width?: number;
+}
+
+const TONES: Record<Tone, (text: string) => string> = {
+  plain: (text) => text,
+  bold: chalk.bold,
+  muted: chalk.dim,
+  danger: chalk.red,
+  success: chalk.bold.yellow,
+  title: chalk.bold.dim.green,
+  warning: chalk.bold.yellow,
+};
+
+/**
+Turn a message into a string with ANSI colors.
+*/
+export function renderMessage(message: Message): string {
+  return typeof message === 'string'
+    ? message
+    : message.map((span) => TONES[span.tone ?? 'plain'](span.text)).join('');
 }
 
 /**
@@ -113,13 +132,13 @@ function formatThreeColumnRow(
 }
 
 /**
-Create the persistent top appbar showing HP, inventory, and current room.
+Create the status bar showing HP, inventory, and current room.
 */
-export function getAppbar(): string {
+export function getAppbar(status: GameStatus | null): string {
   const width = getTerminalWidth();
   const innerContentWidth = Math.max(10, width - 4); // 2 border chars + 2 paddingX(1)
 
-  if (!GameState.player) {
+  if (!status) {
     return renderPanel(chalk.dim('Loading...'), {
       borderColor: chalk.magentaBright,
       paddingX: 1,
@@ -128,21 +147,20 @@ export function getAppbar(): string {
     });
   }
 
-  const clampedHealth = Math.max(0, GameState.player.health);
-  const lostHealth = Math.max(0, GameState.player.maxHealth - clampedHealth);
+  const lostHealth = Math.max(0, status.maxHealth - status.health);
 
   const healthText =
     chalk.bold('HP: ') +
-    chalk.red('❤'.repeat(clampedHealth)) +
+    chalk.red('❤'.repeat(status.health)) +
     chalk.dim.white('o'.repeat(lostHealth));
 
   const itemsValue =
-    GameState.player.items.length === 0
+    status.items.length === 0
       ? chalk.dim.italic('None')
-      : chalk.yellow(GameState.player.items.join(', '));
+      : chalk.yellow(status.items.join(', '));
   const itemsText = chalk.bold('📦 Items: ') + itemsValue;
 
-  const roomText = chalk.bold.cyan(`🏠 ${GameState.currentRoom.toUpperCase()}`);
+  const roomText = chalk.bold.cyan(`🏠 ${status.room.toUpperCase()}`);
 
   const row = formatThreeColumnRow(
     healthText,
@@ -160,8 +178,11 @@ export function getAppbar(): string {
 }
 
 /**
-Combine the top appbar with the main content area.
+Combine the status bar with the main content area.
 */
-export function makeLayout(mainContent: string): string {
-  return `${getAppbar()}\n${mainContent}`;
+export function makeLayout(
+  mainContent: string,
+  status: GameStatus | null
+): string {
+  return `${getAppbar(status)}\n${mainContent}`;
 }

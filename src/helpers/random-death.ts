@@ -2,8 +2,6 @@
 Print a random death message followed by Game Over.
 */
 
-import chalk from 'chalk';
-
 import { printPause } from './print-pause.js';
 import { randomChoice } from './random.js';
 
@@ -14,10 +12,10 @@ export const DEATHS = [
 ] as const;
 
 /**
- * Print a random death message followed by the Game Over banner.
+ * Print a random death message followed by the Game Over line.
  */
 export async function randomDeath(): Promise<void> {
   const deathMsg = randomChoice(DEATHS);
-  await printPause(chalk.red(deathMsg), 3);
-  await printPause(chalk.bold.red('\n\n=== GAME OVER ===\n\n'));
+  await printPause([{ text: deathMsg, tone: 'danger' }], 3);
+  await printPause([{ text: '=== GAME OVER ===', tone: 'danger' }], 3);
 }
