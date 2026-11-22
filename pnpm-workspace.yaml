@@ -1,0 +1,9 @@
+allowBuilds:
+  esbuild: true
+  lefthook: true
+
+publicHoistPattern:
+  - '*prettier-plugin*'
+  - '@prettier/plugin-*'
+  - '@commitlint/*'
+  - 'conventional-changelog-*'

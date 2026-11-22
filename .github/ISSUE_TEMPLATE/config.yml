@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/dcdavidev/thehouse.js/security/advisories/new
+    about: Report security vulnerabilities privately. Do not open a public issue.
+  - name: Questions and discussions
+    url: https://github.com/dcdavidev/thehouse.js/discussions
+    about: Ask questions and share ideas with the community.

@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "skills": {
+    "dropdx": {
+      "source": "dcdavidev/dropdx",
+      "commit": "90542bea20e62f9ff2664a9c7cc1f2975e35009a",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/dropdx/SKILL.md",
+      "computedHash": "d9e0c8fa7986c2a368c15be1b7bdfa3109b7ddc07c0f18ed0e2f0cce8c1a4e2b"
+    },
+    "spellbookx-commitlint": {
+      "source": "dcdavidev/spellbookx",
+      "commit": "59f1ed9e01988a022330a000a7e3f65b965bc115",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/spellbookx-commitlint/SKILL.md",
+      "computedHash": "23a63a5abc6da5117615ac22b3e30951eec98c4fc70b802c68559c60b8062890"
+    },
+    "spellbookx-cspell": {
+      "source": "dcdavidev/spellbookx",
+      "commit": "59f1ed9e01988a022330a000a7e3f65b965bc115",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/spellbookx-cspell/SKILL.md",
+      "computedHash": "3dfe3aa95447658fba842e38feb643fda999169bb1bc56af0be42633b85062ff"
+    },
+    "spellbookx-eslint": {
+      "source": "dcdavidev/spellbookx",
+      "commit": "59f1ed9e01988a022330a000a7e3f65b965bc115",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/spellbookx-eslint/SKILL.md",
+      "computedHash": "9874c98b2612e914062e1415efa7a0c1b74cac168b81ff7191cf35e3a3aff0d4"
+    },
+    "spellbookx-prettier": {
+      "source": "dcdavidev/spellbookx",
+      "commit": "59f1ed9e01988a022330a000a7e3f65b965bc115",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/spellbookx-prettier/SKILL.md",
+      "computedHash": "fa7282caf578f167c435b76f6eb5af284c3b9719f1880e7f3943506d297506d9"
+    },
+    "spellbookx-setup": {
+      "source": "dcdavidev/spellbookx",
+      "commit": "59f1ed9e01988a022330a000a7e3f65b965bc115",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/spellbookx-setup/SKILL.md",
+      "computedHash": "20a0bf923b691dcf754bd3a3b4c0222729b66cce6bcb037e7539e4b24909aa40"
+    }
+  }
+}

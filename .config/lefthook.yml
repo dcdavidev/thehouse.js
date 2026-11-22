@@ -1,0 +1,72 @@
+# Lefthook configuration
+# Documentation: https://lefthook.dev/configuration/
+#
+# Skip every hook for one command:   LEFTHOOK=0 git commit ...
+# Skip some jobs for one command:    LEFTHOOK_EXCLUDE=build,typecheck git push
+# Override jobs locally (ignored by Git): lefthook-local.yml
+
+min_version: 2.0.0
+assert_lefthook_installed: true
+skip_lfs: true
+
+# ------------------------------------------------------------------------------
+# Before the commit is created: check only the staged files.
+# ------------------------------------------------------------------------------
+pre-commit:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+  jobs:
+    # ESLint and Prettier both write files, so they run one after the other.
+    - name: lint-and-format
+      group:
+        piped: true
+        jobs:
+          - name: eslint
+            run: pnpm exec eslint --no-warn-ignored --fix {staged_files}
+            stage_fixed: true
+            fail_text: ESLint found errors that it cannot fix. Fix them and commit again.
+          - name: prettier
+            run: pnpm exec prettier --ignore-unknown --write {staged_files}
+            stage_fixed: true
+
+    - name: typecheck
+      glob: '*.{ts,tsx,mts,cts}'
+      run: pnpm run typecheck
+      fail_text: TypeScript found type errors.
+
+    - name: lockfile
+      glob: '{package.json,pnpm-workspace.yaml}'
+      run: pnpm install --frozen-lockfile --lockfile-only
+      fail_text: pnpm-lock.yaml is out of date. Run "pnpm install" and stage pnpm-lock.yaml.
+
+# ------------------------------------------------------------------------------
+# Commit message: enforce Conventional Commits.
+# ------------------------------------------------------------------------------
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --edit {1}
+      fail_text: 'Use Conventional Commits, for example "feat: add new room". Run "pnpm commit" for a guided prompt.'
+
+# ------------------------------------------------------------------------------
+# After the working tree changes: reinstall dependencies when they changed.
+# ------------------------------------------------------------------------------
+post-checkout:
+  jobs:
+    - name: install-dependencies
+      # {1} = previous HEAD, {2} = new HEAD, {3} = 1 for a branch checkout.
+      run: '[ "{3}" = "1" ] || exit 0; sh .config/lefthook/install-if-deps-changed.sh {1} {2}'
+
+post-merge:
+  jobs:
+    - name: install-dependencies
+      # "git merge" and "git pull" save the previous HEAD in ORIG_HEAD.
+      run: sh .config/lefthook/install-if-deps-changed.sh ORIG_HEAD
+
+post-rewrite:
+  jobs:
+    - name: install-dependencies
+      # {1} = "amend" or "rebase". A rebase saves the previous HEAD in ORIG_HEAD.
+      run: sh .config/lefthook/install-if-deps-changed.sh rewrite:{1}
