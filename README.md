@@ -4,13 +4,34 @@ Trapped inside a haunted house with no memory of how you got there. A terminal-b
 
 TypeScript port of [thehouse.py](https://github.com/dcdavidev/thehouse.py).
 
-## Install
+## Play
+
+Run directly with `npx` (no installation required):
+
+```bash
+npx @dcdavidev/thehouse
+```
+
+Or with `pnpm`:
+
+```bash
+pnpm dlx @dcdavidev/thehouse
+```
+
+Or install globally and run the `thehouse` command:
+
+```bash
+npm install -g @dcdavidev/thehouse
+thehouse
+```
+
+## Development
+
+Install dependencies:
 
 ```bash
 pnpm install
 ```
-
-## Play
 
 Run directly from TypeScript source:
 
@@ -18,14 +39,14 @@ Run directly from TypeScript source:
 pnpm play
 ```
 
-Or build and run the compiled CLI:
+Build and run the compiled CLI:
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-## Development
+Run checks:
 
 ```bash
 pnpm typecheck
