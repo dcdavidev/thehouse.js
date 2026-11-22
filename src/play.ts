@@ -7,7 +7,7 @@ import { BANNERS } from './helpers/banner.js';
 import { printPause } from './helpers/print-pause.js';
 import { GameState } from './helpers/state.js';
 import { validateInput } from './helpers/validate-input.js';
-import { type GameIO, QuitGame, setIO } from './io.js';
+import { currentIO, type GameIO, QuitGame, setIO } from './io.js';
 import { TheHouse } from './thehouse.js';
 
 /**
@@ -38,6 +38,12 @@ export async function main(io: GameIO): Promise<void> {
     }
   }
 
+  // a newer game may have taken over the front end while this one was
+  // quitting: then it's not ours to print to or reset
+  if (currentIO() !== io) {
+    return;
+  }
+
   try {
     await printPause([{ text: BANNERS.bye, tone: 'warning' }], 0);
   } catch (error) {
@@ -46,7 +52,9 @@ export async function main(io: GameIO): Promise<void> {
       throw error;
     }
   } finally {
-    GameState.reset();
-    setIO(null);
+    if (currentIO() === io) {
+      GameState.reset();
+      setIO(null);
+    }
   }
 }

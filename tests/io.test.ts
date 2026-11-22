@@ -84,6 +84,28 @@ describe('GameIO', () => {
     await expect(main(io)).resolves.toBeUndefined();
   });
 
+  it('a game quitting after a newer one started leaves the newer one alone', async () => {
+    let quit: (() => void) | undefined;
+    const first = fakeIO(() => 'Quit');
+    first.choose = () =>
+      new Promise((_resolve, reject) => {
+        quit = () => reject(new QuitGame());
+      });
+    const firstDone = main(first);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const second = fakeIO(() => 'Quit');
+    second.choose = () => new Promise(() => {});
+    void main(second);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const printedBySecond = second.printed.length;
+
+    quit!();
+    await firstDone;
+    expect(second.printed.length).toBe(printedBySecond);
+    expect(first.printed.some((m) => text(m) === BANNERS.bye)).toBe(false);
+  });
+
   it('survives many random playthroughs', async () => {
     for (let game = 0; game < 30; game++) {
       let steps = 0;
