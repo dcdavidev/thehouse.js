@@ -1,88 +1,51 @@
 /**
-Print messages with a persistent appbar and pause the terminal.
+Print messages through the installed front end and pause after each one.
 */
 
-import chalk from 'chalk';
-
-import { renderBanner } from './banner.js';
-import { makeLayout, renderPanel } from './ui.js';
+import { getIO, type Message, type Span } from '../io.js';
+import { GameState } from './state.js';
 
 /**
- * Pause execution for the given number of seconds while handling SIGINT.
- */
-function sleep(seconds: number): Promise<void> {
-  if (seconds <= 0) {
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve) => {
-    const onSigint = (): void => {
-      clearTimeout(timer);
-      process.off('SIGINT', onSigint);
-      console.log(chalk.bold.yellow(renderBanner('BYE')));
-      process.exit(0);
-    };
-
-    const timer = setTimeout(() => {
-      process.off('SIGINT', onSigint);
-      resolve();
-    }, seconds * 1000);
-
-    process.once('SIGINT', onSigint);
-  });
+Whether a message spans several lines, i.e. is an ASCII-art banner.
+*/
+function isMultiline(message: Message): boolean {
+  const text =
+    typeof message === 'string'
+      ? message
+      : message.map((span) => span.text).join('');
+  return text.trim().includes('\n');
 }
 
 /**
- * Move cursor up and clear previously rendered lines on interactive TTYs.
- */
-function clearPreviousLines(lineCount: number): void {
-  if (lineCount > 0 && process.stdout.isTTY) {
-    process.stdout.write(`\u{1B}[${lineCount}A\u{1B}[0J`);
-  }
+Whether the content is one message made of spans (not a list of messages).
+*/
+function isSpans(content: Message | readonly Message[]): content is Span[] {
+  return (
+    typeof content !== 'string' &&
+    content.length > 0 &&
+    typeof content[0] === 'object' &&
+    'text' in content[0]
+  );
 }
 
 /**
- * Print a message (or multiple messages sequentially inside the same box)
- * with the persistent top appbar, pausing after each line.
+ * Print a message (or several, one after the other in the same box) with
+ * the status bar, pausing after each one.
+ * @param content a message or a list of messages
+ * @param sleepSeconds how long to pause after each message
  */
 export async function printPause(
-  content: string | readonly string[],
+  content: Message | readonly Message[],
   sleepSeconds = 1
 ): Promise<void> {
-  const lines = typeof content === 'string' ? [content] : [...content];
-  const isBanner = lines.some((line) => line.trim().includes('\n'));
+  const messages: readonly Message[] =
+    typeof content === 'string' || isSpans(content)
+      ? [content]
+      : (content as readonly Message[]);
 
-  if (isBanner) {
-    for (const line of lines) {
-      console.log(makeLayout(line));
-      await sleep(sleepSeconds);
-    }
-    return;
-  }
-
-  let accumulated = '';
-  let renderedLineCount = 0;
-
-  for (const [i, line] of lines.entries()) {
-    if (i > 0) {
-      accumulated += '\n\n';
-    }
-    accumulated += line;
-
-    const panel = renderPanel(accumulated, {
-      borderColor: chalk.blueBright,
-      paddingX: 2,
-      paddingY: 1,
-    });
-    const frame = makeLayout(panel);
-
-    if (i > 0) {
-      clearPreviousLines(renderedLineCount);
-    }
-
-    process.stdout.write(`${frame}\n`);
-    renderedLineCount = frame.split('\n').length;
-
-    await sleep(sleepSeconds);
-  }
+  await getIO().print(messages, {
+    seconds: sleepSeconds,
+    banner: messages.some((message) => isMultiline(message)),
+    status: GameState.snapshot(),
+  });
 }

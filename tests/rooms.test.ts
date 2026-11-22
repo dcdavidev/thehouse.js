@@ -10,9 +10,9 @@ import {
   STUDIO_KEY,
 } from '../src/helpers/constants.js';
 import { GameState } from '../src/helpers/state.js';
-import { getAppbar } from '../src/helpers/ui.js';
 import * as validateInputModule from '../src/helpers/validate-input.js';
 import * as validateTextInputModule from '../src/helpers/validate-text-input.js';
+import { getAppbar } from '../src/terminal/ui.js';
 import { TheHouse } from '../src/thehouse.js';
 
 vi.mock('../src/helpers/print-pause.js', () => ({
@@ -161,7 +161,7 @@ describe('TheHouse & Rooms', () => {
     player.health = -3;
     GameState.update({ player, room: 'livingroom' });
 
-    const bar = getAppbar();
+    const bar = getAppbar(GameState.snapshot());
     expect(bar).toContain('LIVINGROOM');
     expect(bar).toContain('Items:');
   });

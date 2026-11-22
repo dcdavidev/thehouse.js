@@ -226,9 +226,6 @@ importers:
       chalk:
         specifier: ^6.0.1
         version: 6.0.1
-      figlet:
-        specifier: ^1.12.0
-        version: 1.12.0
       string-width:
         specifier: ^9.0.0
         version: 9.0.0
@@ -2651,11 +2648,6 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
-
-  figlet@1.12.0:
-    resolution: {integrity: sha512-Ith3WsUi0N/EqGt+0/F6XnWhT04sohhH2tT0Dq7GdUmWbMTIoCbg2Jq9qKggmTO62ST5kRCfB311EmIMbizGyA==}
-    engines: {node: '>= 17.0.0'}
-    hasBin: true
 
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
@@ -7047,10 +7039,6 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
-
-  figlet@1.12.0:
-    dependencies:
-      commander: 14.0.3
 
   figures@3.2.0:
     dependencies:
